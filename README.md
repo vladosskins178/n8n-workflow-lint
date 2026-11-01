@@ -5,7 +5,7 @@
 
 A small command-line checker for exported [n8n](https://n8n.io) workflows. Point it at a workflow JSON file (or a folder of them) and it lists the problems that tend to bite in production: API keys pasted into nodes, open webhooks, no error workflow, HTTP calls without retries, and nodes that can never run.
 
-No dependencies. Needs Node.js 18.17 or newer.
+No dependencies. Needs Node.js 20 or newer.
 
 ![n8n-workflow-lint output for the sample workflows](docs/screenshot.png)
 

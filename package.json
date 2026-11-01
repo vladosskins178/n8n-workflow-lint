@@ -16,7 +16,7 @@
     "lint:examples": "node bin/n8n-workflow-lint.js examples"
   },
   "engines": {
-    "node": ">=18.17"
+    "node": ">=20"
   },
   "keywords": [
     "n8n",
