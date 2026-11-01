@@ -1,0 +1,37 @@
+{
+  "name": "n8n-workflow-lint",
+  "version": "0.1.0",
+  "description": "Lint exported n8n workflow JSON for hardcoded secrets, open webhooks, missing error workflows, missing retries and dead nodes.",
+  "type": "module",
+  "bin": {
+    "n8n-workflow-lint": "bin/n8n-workflow-lint.js"
+  },
+  "exports": "./src/lint.js",
+  "files": [
+    "bin",
+    "src"
+  ],
+  "scripts": {
+    "test": "node --test test/*.test.js",
+    "lint:examples": "node bin/n8n-workflow-lint.js examples"
+  },
+  "engines": {
+    "node": ">=18.17"
+  },
+  "keywords": [
+    "n8n",
+    "lint",
+    "workflow",
+    "automation",
+    "security",
+    "cli"
+  ],
+  "author": "Vladislav Y (https://vlstudio.app)",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vladosskins178/n8n-workflow-lint.git"
+  },
+  "bugs": "https://github.com/vladosskins178/n8n-workflow-lint/issues",
+  "homepage": "https://github.com/vladosskins178/n8n-workflow-lint#readme"
+}

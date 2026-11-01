@@ -1,0 +1,93 @@
+{
+  "name": "Lead intake (risky)",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "lead-intake",
+        "responseMode": "onReceived",
+        "options": {}
+      },
+      "id": "9b7e4d20-0002-4b1a-8c2f-000000000001",
+      "name": "Website form",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [0, 0],
+      "webhookId": "lead-intake"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.openai.com/v1/chat/completions",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "Authorization", "value": "Bearer sk-proj-FAKEkey4demo1234567890abcdefghij" }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\"model\":\"gpt-4o-mini\",\"messages\":[{\"role\":\"user\",\"content\":\"Score this lead: {{ $json.body.message }}\"}]}",
+        "options": {}
+      },
+      "id": "9b7e4d20-0002-4b1a-8c2f-000000000002",
+      "name": "Score lead",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [240, 0]
+    },
+    {
+      "parameters": {
+        "jsCode": "const apiKey = \"crm_live_FAKE00demo11demo22\";\nreturn items.map(i => ({ json: { ...i.json, crmKey: apiKey } }));"
+      },
+      "id": "9b7e4d20-0002-4b1a-8c2f-000000000003",
+      "name": "Prepare CRM payload",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [480, 0]
+    },
+    {
+      "parameters": {
+        "url": "https://hooks.example.com/old-endpoint",
+        "options": {}
+      },
+      "id": "9b7e4d20-0002-4b1a-8c2f-000000000004",
+      "name": "Old webhook call",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [480, 200],
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "chatId": "123456789",
+        "text": "New lead",
+        "additionalFields": {}
+      },
+      "id": "9b7e4d20-0002-4b1a-8c2f-000000000005",
+      "name": "Notify sales",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [720, 200],
+      "credentials": {
+        "telegramApi": { "id": "3", "name": "Sales bot" }
+      }
+    }
+  ],
+  "connections": {
+    "Website form": {
+      "main": [[{ "node": "Score lead", "type": "main", "index": 0 }]]
+    },
+    "Score lead": {
+      "main": [[{ "node": "Prepare CRM payload", "type": "main", "index": 0 }]]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {
+    "Website form": [
+      { "json": { "body": { "name": "Jane Doe", "email": "jane@example.com" } } }
+    ]
+  }
+}

@@ -1,0 +1,90 @@
+{
+  "name": "Lead intake (clean)",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "lead-intake",
+        "authentication": "headerAuth",
+        "responseMode": "onReceived",
+        "options": {}
+      },
+      "id": "3f1c2a10-0001-4c3a-9d1e-000000000001",
+      "name": "Website form",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [0, 0],
+      "webhookId": "lead-intake",
+      "credentials": {
+        "httpHeaderAuth": { "id": "1", "name": "Form shared secret" }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.example-crm.com/v1/contacts",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "hubspotAppToken",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            { "name": "email", "value": "={{ $json.body.email }}" },
+            { "name": "name", "value": "={{ $json.body.name }}" }
+          ]
+        },
+        "options": {}
+      },
+      "id": "3f1c2a10-0001-4c3a-9d1e-000000000002",
+      "name": "Create CRM contact",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [240, 0],
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 1000,
+      "credentials": {
+        "hubspotAppToken": { "id": "2", "name": "CRM token" }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $env.SALES_CHAT_ID }}",
+        "text": "=New lead: {{ $('Website form').item.json.body.name }}",
+        "additionalFields": {}
+      },
+      "id": "3f1c2a10-0001-4c3a-9d1e-000000000003",
+      "name": "Notify sales",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [480, 0],
+      "credentials": {
+        "telegramApi": { "id": "3", "name": "Sales bot" }
+      }
+    },
+    {
+      "parameters": {
+        "content": "Leads from the website form go to the CRM, then sales gets a ping.",
+        "height": 160,
+        "width": 300
+      },
+      "id": "3f1c2a10-0001-4c3a-9d1e-000000000004",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [0, -220]
+    }
+  ],
+  "connections": {
+    "Website form": {
+      "main": [[{ "node": "Create CRM contact", "type": "main", "index": 0 }]]
+    },
+    "Create CRM contact": {
+      "main": [[{ "node": "Notify sales", "type": "main", "index": 0 }]]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "errorWorkflow": "7"
+  },
+  "pinData": {}
+}
